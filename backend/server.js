@@ -21,7 +21,7 @@ app.use(cors())
 app.use(helmat())
 app.use(morgan("dev"))
 
-app.use(productRoute)
+app.use("/product",productRoute)
 
 async function initDB(){
     try {
