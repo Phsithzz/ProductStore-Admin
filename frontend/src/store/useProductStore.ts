@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { create } from "zustand";
 
-import type * as productType from "../types/productType";
+import * as productType from "../types/productType";
 import type { ApiResponse } from "../types/api";
 import toast from "react-hot-toast";
 
@@ -12,6 +12,7 @@ export const useProductStore = create<productType.ProductStore>((set, get) => ({
   products: [],
   loading: false,
   error: null,
+  currentProduct:null,
 
   formData: {
     name: "",
@@ -29,7 +30,7 @@ export const useProductStore = create<productType.ProductStore>((set, get) => ({
 
     try {
       const { formData } = get();
-      await axios.post(`${BASE_URL}/products`, formData);
+      await axios.post<ApiResponse<productType.Product>>(`${BASE_URL}/products`, formData);
       await get().fetchProducts();
       get().resetForm();
       toast.success("Product add succesfully");
@@ -65,19 +66,62 @@ export const useProductStore = create<productType.ProductStore>((set, get) => ({
     }
   },
 
-  deleteProduct: async (id: number) => {
+  deleteProduct: async (id:number) => {
     set({ loading: true, error: null });
     try {
-      await axios.delete(`${BASE_URL}/products/${id}`);
+      await axios.delete<ApiResponse<productType.Product>>(`${BASE_URL}/products/${id}`);
       set((prev) => ({
         products: prev.products.filter((product) => product.id !== id),
       }));
       toast.success("Product deleted successfully");
     } catch (err) {
-      console.log("Errror", err);
+      console.log("Error in deleteProduct", err);
       toast.error("Something went wrong");
     } finally {
       set({ loading: false });
     }
   },
+  
+  fetchProduct:async(id:number)=>{
+    set({loading:true,error:null})
+
+    try {
+      const res = await axios.get<ApiResponse<productType.Product>>(`${BASE_URL}/products/${id}`)
+      
+      set({currentProduct:res.data.data,
+        formData:res.data.data,
+        error:null
+      })
+
+    } catch (err) {
+
+      console.log("Error in fetchProduct",err)
+      set({error:"Something went wrong",currentProduct:null})
+
+    }
+    finally{
+      set({loading:false})
+    }
+  },
+
+  updateProduct:async(id)=>{
+    set({loading:true,error:null})
+
+    try {
+      
+      const {formData} = get()
+      const res = await axios.put<ApiResponse<productType.Product>>(`${BASE_URL}/product/${id}`,formData)
+      set({currentProduct:res.data.data})
+      toast.success("Product update successfully")
+
+    } catch (err) {
+      console.log("Error in updateProduct",err)
+      toast.error("Something went wrong")
+      
+    }
+    finally{
+      set({loading:false})
+    }
+  }
+
 }));
