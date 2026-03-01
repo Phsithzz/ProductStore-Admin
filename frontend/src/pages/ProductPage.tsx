@@ -180,8 +180,8 @@ const ProductPage = () => {
           </div>
         </div>
       </div>
-      <dialog id="delete_modal" className="modal">
-        <div className="modal-box">
+      <dialog id="delete_modal" className="modal ">
+        <div className="modal-box border-6 border-black shadow-[6px_6px_0px_black]">
           <h3 className="font-bold text-lg mb-4">Delete Product</h3>
           <p className="mb-6">
             Are you sure you want to delete this product? 
@@ -193,7 +193,8 @@ const ProductPage = () => {
             </form>
 
             <button
-              className="btn btn-error"
+              className="btn bg-red-500 text-white border-4 border-black shadow-[4px_4px_0px_black] 
+            transition-all ease-in hover:bg-red-400"
               onClick={handleDelete}
             >
               Confirm Delete
