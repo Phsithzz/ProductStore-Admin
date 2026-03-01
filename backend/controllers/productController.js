@@ -23,22 +23,25 @@ export const getAllProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   const { name, price, image } = req.body;
 
-if (!name || price === undefined || !image) {
-    return res.status(400).json({
-      success: false,
-      message: "required Data",
-    });
-  }
+const numericPrice = Number(price);
 
+if (!name || isNaN(numericPrice) || !image) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid data",
+  });
+}
   try {
+
+    
     const newProduct = await sql`
         INSERT INTO products (name,price,image)
-        VALUES (${name}, ${price}, ${image})
+        VALUES (${name}, ${numericPrice}, ${image})
         RETURNING *
         `;
     res.status(201).json({
       success: true,
-      data: newProduct,
+      data: newProduct[0],
     });
   } catch (err) {
     console.log(err);
@@ -79,10 +82,18 @@ if (product.length === 0) {
 export const updateProduct = async (req, res) => {
 const id = Number(req.params.id);
   const { name, price, image } = req.body;
+  const numericPrice = Number(price);
+
+if (!name || isNaN(numericPrice) || !image) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid data",
+  });
+}
   try {
     const updateProduct = await sql`
         UPDATE products
-        SET name=${name},price=${price},image=${image}
+        SET name=${name},price=${numericPrice},image=${image}
         WHERE id = ${id}
         RETURNING *
         `;
