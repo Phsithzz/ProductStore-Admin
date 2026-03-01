@@ -20,7 +20,10 @@ const PORT = process.env.PORT || 3000
 app.use(express.json())
 app.use(cors(
     {
-        origin: "https://store-board-admin.vercel.app/"
+     origin: [
+    "http://localhost:5173",
+    "https://store-board-admin.vercel.app"
+  ]
     }
 ))
 app.use(helmet({
