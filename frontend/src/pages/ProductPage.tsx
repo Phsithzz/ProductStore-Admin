@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
-import { useProductStore } from '../store/useProductStore'
-import { useNavigate, useParams } from 'react-router-dom'
-import ProductDetailSkeleton from '../components/ProductDetailSkeleton'
-import { ArrowLeftIcon } from 'lucide-react'
-
+import React, { useEffect } from "react";
+import { useProductStore } from "../store/useProductStore";
+import { useNavigate, useParams } from "react-router-dom";
+import ProductDetailSkeleton from "../components/ProductDetailSkeleton";
+import { ArrowLeftIcon, SaveIcon, Trash2Icon } from "lucide-react";
+import imageUrlError from "../assets/images/imageUrlError.jpg";
 const ProductPage = () => {
   const {
     currentProduct,
@@ -14,45 +14,193 @@ const ProductPage = () => {
     fetchProduct,
     updateProduct,
     deleteProduct,
-  } = useProductStore()
+  } = useProductStore();
 
-  const navigate = useNavigate()
-  const {id} = useParams()
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-  useEffect(()=>{
-    if(id){
-      fetchProduct(Number(id))
+  useEffect(() => {
+    if (id) {
+      fetchProduct(Number(id));
     }
-  },[fetchProduct,id])
+  }, [fetchProduct, id]);
 
-  if(loading){
+  const handleDelete = async () => {
+    if (!id) return;
+    await deleteProduct(Number(id));
+    navigate("/");
+  };
+
+  if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <ProductDetailSkeleton/>
+        <ProductDetailSkeleton />
       </div>
-    )
+    );
   }
 
-  if(error){
+  if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="alert alert-error">{error}</div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <button
-      onClick={()=>navigate("/")}
-      className='btn btn-ghost mb-8' 
-
-      >
-        <ArrowLeftIcon className='size-4 mr-2'/>
+      <button onClick={() => navigate("/")} className="btn btn-ghost mb-8">
+        <ArrowLeftIcon className="size-4 mr-2" />
         Back to Products
       </button>
-    </div>
-  )
-}
 
-export default ProductPage
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="rounded-lg overflow-hidden shadow-lg bg-base-100">
+          <img
+            src={currentProduct?.image || imageUrlError}
+            alt={currentProduct?.name || "product image error"}
+            className="size-full object-cover"
+          />
+        </div>
+
+        <div
+          className="
+        card bg-base-100 shadow-lg"
+        >
+          <div
+            className="
+          card-body"
+          >
+            <h1 className="card-title text-2xl mb-6">Edit Product</h1>
+
+            <form
+              onSubmit={async (e: React.FormEvent<HTMLFormElement>) => {
+                e.preventDefault();
+                await updateProduct(Number(id));
+              }}
+              className="space-y-6"
+            >
+              <div className="form-control">
+                <label className="label label-text text-base font-semibold">
+                  Product Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter product name"
+                  className="input 
+              outline-none
+               focus:border-4 w-full"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label label-text text-base font-semibold">
+                  Price
+                </label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  className="input 
+              outline-none
+              focus:border-4 w-full"
+                  value={formData.price}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label label-text text-base font-semibold">
+                  Image Url
+                </label>
+                <input
+                  type="text"
+                  placeholder="http://example.com/image.jpg"
+                  className="input 
+              outline-none
+             focus:border-4 w-full"
+                  value={formData.image}
+                  onChange={(e) =>
+                    setFormData({ ...formData, image: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex justify-between mt-8">
+                <button
+                  type="button"
+                  onClick={() =>
+                    (
+                      document.getElementById(
+                        "delete_modal",
+                      ) as HTMLDialogElement
+                    )?.showModal()
+                  }
+                  className="btn btn-error"
+                >
+                  <Trash2Icon className="size-4 mr-2" />
+                  Delete Product
+                </button>
+
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={
+                    loading ||
+                    !formData.name ||
+                    !formData.price ||
+                    !formData.image
+                  }
+                >
+                  {loading ? (
+                    <span className="loading loading-spinner loading-sm" />
+                  ) : (
+                    <>
+                      <SaveIcon className="size-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <dialog id="delete_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg mb-4">Delete Product</h3>
+          <p className="mb-6">
+            Are you sure you want to delete this product? 
+          </p>
+
+          <div className="modal-action">
+            <form method="dialog">
+              <button className="btn btn-ghost">Cancel</button>
+            </form>
+
+            <button
+              className="btn btn-error"
+              onClick={async () => {
+                await deleteProduct(Number(id));
+                navigate("/");
+              }}
+            >
+              Confirm Delete
+            </button>
+          </div>
+        </div>
+
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
+    </div>
+  );
+};
+
+export default ProductPage;

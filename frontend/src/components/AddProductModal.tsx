@@ -76,7 +76,7 @@ const AddProductModal = () => {
                 <input
                   type="text"
                   inputMode="decimal"
-                  pattern="[0-9]*"
+                
                   placeholder="0.00"
                   className="input  w-full  py-4 focus:border-4
                             focus:input-primary transition-colors
