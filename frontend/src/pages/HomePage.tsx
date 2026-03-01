@@ -24,8 +24,10 @@ const HomePage = () => {
 
   modal?.showModal();
 }}
-        className="btn btn-primary">
-          <PlusCircleIcon className="size-5 mr-2 " />
+        className="btn btn-primary border-3 border-white
+        shadow-[3px_3px_0px_white] rounded-md
+ ">
+          <PlusCircleIcon className="size-5 mr-2    " />
           Add Product
         </button>
 
