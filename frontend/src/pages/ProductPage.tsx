@@ -185,10 +185,7 @@ const ProductPage = () => {
 
             <button
               className="btn btn-error"
-              onClick={async () => {
-                await deleteProduct(Number(id));
-                navigate("/");
-              }}
+              onClick={handleDelete}
             >
               Confirm Delete
             </button>
