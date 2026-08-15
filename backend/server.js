@@ -18,14 +18,14 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 app.use(express.json())
-app.use(cors(
-    {
-     origin: [
-    "http://localhost:5173",
-    "https://store-board-admin-kz66k301h-phsithzzs-projects.vercel.app"
-  ]
-    }
-))
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://store-board-admin.vercel.app",
+    ],
+  })
+);
 app.use(helmet({
     contentSecurityPolicy:false
 }))
